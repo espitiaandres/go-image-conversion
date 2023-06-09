@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/adrium/goheif"
 )
@@ -17,41 +18,57 @@ type writerSkipper struct {
 	bytesToSkip int
 }
 
+func timer(name string) func() {
+	start := time.Now()
+	return func() {
+		fmt.Printf("%s took %v\n", name, time.Since(start))
+	}
+}
+
 func main() {
-	if err := os.Mkdir("output", os.ModePerm); err != nil {
+	// CONSTANTS
+	INPUT_PATH := "./input"
+	OUTPUT_PATH := "./output"
+	// FILE_TYPES_INPUT := (".heic", ".png")
+	FILE_TYPE_OUTPUT := "jpg"
+
+	defer timer("main")()
+
+	if _, existErr := os.Stat(OUTPUT_PATH); os.IsNotExist(existErr) {
+		if mkdirErr := os.Mkdir(OUTPUT_PATH, os.ModePerm); mkdirErr != nil {
+			log.Fatal(mkdirErr)
+		}
+	}
+
+	entries, err := os.ReadDir(INPUT_PATH)
+	if err != nil {
 		log.Fatal(err)
 	}
 
-	entries, err := os.ReadDir("input")
-	if err != nil {
-		fmt.Println("the strokes")
-		// log.Fatal(err)
-	}
-
-	fmt.Println(entries)
-
 	for _, e := range entries {
-		fmt.Println(e.Name())
-
-		input_file_name := fmt.Sprintf("input/%s", e.Name())
-		output_file_name := fmt.Sprintf("output/%s", e.Name())
+		inputFileName := fmt.Sprintf("%s/%s", INPUT_PATH, e.Name())
+		outputFileName := ""
 
 		heicFile := strings.Contains(
-			strings.ToLower(input_file_name),
+			strings.ToLower(inputFileName),
 			strings.ToLower(".heic"),
 		)
 
-		fmt.Println(heicFile)
-
 		if !heicFile {
-			continue
+			outputFileName = strings.ReplaceAll(inputFileName, INPUT_PATH, OUTPUT_PATH)
+			MoveFile(inputFileName, outputFileName)
+		} else {
+			outputFileName = strings.ReplaceAll(inputFileName, ".HEIC", fmt.Sprintf(".%s", FILE_TYPE_OUTPUT))
+			conversion_err := convertHeicToJpg(inputFileName, outputFileName)
+
+			if conversion_err != nil {
+				log.Fatal(conversion_err)
+			}
 		}
 
-		conversion_err := convertHeicToJpg(input_file_name, strings.ReplaceAll(output_file_name, ".HEIC", ".jpg"))
-
-		if conversion_err != nil {
-			log.Fatal(conversion_err)
-		}
+		fmt.Println("--------------")
+		fmt.Println(inputFileName)
+		fmt.Println(outputFileName)
 	}
 
 	log.Println("Conversion Passed")
@@ -60,12 +77,6 @@ func main() {
 // convertHeicToJpg takes in an input file (of heic format) and converts
 // it to a jpeg format, named as the output parameters.
 func convertHeicToJpg(input, output string) error {
-
-	fmt.Println("input")
-	fmt.Println(input)
-	fmt.Println("ouput")
-	fmt.Println(output)
-
 	fileInput, err := os.Open(input)
 	if err != nil {
 		return err
@@ -139,4 +150,23 @@ func newWriterExif(w io.Writer, exif []byte) (io.Writer, error) {
 	}
 
 	return writer, nil
+}
+
+func MoveFile(sourcePath, destPath string) error {
+	inputFile, err := os.Open(sourcePath)
+	if err != nil {
+		return fmt.Errorf("couldn't open source file: %s", err)
+	}
+	outputFile, err := os.Create(destPath)
+	if err != nil {
+		inputFile.Close()
+		return fmt.Errorf("couldn't open dest file: %s", err)
+	}
+	defer outputFile.Close()
+	_, err = io.Copy(outputFile, inputFile)
+	inputFile.Close()
+	if err != nil {
+		return fmt.Errorf("writing to output file failed: %s", err)
+	}
+	return nil
 }
