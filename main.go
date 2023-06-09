@@ -12,6 +12,9 @@ import (
 	"github.com/adrium/goheif"
 )
 
+// TODO: add cli args?
+// TODO: optimize with parallelism
+
 // Skip Writer for exif writing
 type writerSkipper struct {
 	w           io.Writer
