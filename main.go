@@ -32,7 +32,6 @@ func main() {
 	// CONSTANTS
 	INPUT_PATH := "./input"
 	OUTPUT_PATH := "./output"
-	// FILE_TYPES_INPUT := (".heic", ".png")
 	FILE_TYPE_OUTPUT := "jpg"
 
 	defer timer("main")()
@@ -44,6 +43,7 @@ func main() {
 	}
 
 	entries, err := os.ReadDir(INPUT_PATH)
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -133,6 +133,8 @@ func (w *writerSkipper) Write(data []byte) (int, error) {
 }
 
 func newWriterExif(w io.Writer, exif []byte) (io.Writer, error) {
+	defer timer("newWriterExif")()
+
 	writer := &writerSkipper{w, 2}
 	soi := []byte{0xff, 0xd8}
 	if _, err := w.Write(soi); err != nil {
@@ -156,6 +158,8 @@ func newWriterExif(w io.Writer, exif []byte) (io.Writer, error) {
 }
 
 func MoveFile(sourcePath, destPath string) error {
+	defer timer("MoveFile")()
+
 	inputFile, err := os.Open(sourcePath)
 	if err != nil {
 		return fmt.Errorf("couldn't open source file: %s", err)
