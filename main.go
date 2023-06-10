@@ -29,9 +29,9 @@ func timer(name string) func() {
 
 func main() {
 	// CONSTANTS
-	INPUT_PATH := "./input"
-	OUTPUT_PATH := "./output"
-	FILE_TYPE_OUTPUT := "jpg"
+	const INPUT_PATH string = "./input"
+	const OUTPUT_PATH string = "./output"
+	const FILE_TYPE_OUTPUT string = "jpg"
 
 	defer timer("main")()
 
