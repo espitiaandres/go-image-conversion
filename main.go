@@ -13,7 +13,6 @@ import (
 )
 
 // TODO: add cli args?
-// TODO: optimize with parallelism
 
 // Skip Writer for exif writing
 type writerSkipper struct {
