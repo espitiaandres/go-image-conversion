@@ -59,14 +59,16 @@ func main() {
 
 		if !heicFile {
 			outputFileName = strings.ReplaceAll(inputFileName, INPUT_PATH, OUTPUT_PATH)
-			MoveFile(inputFileName, outputFileName)
+			go MoveFile(inputFileName, outputFileName)
 		} else {
 			outputFileName = strings.ReplaceAll(inputFileName, ".HEIC", fmt.Sprintf(".%s", FILE_TYPE_OUTPUT))
-			conversion_err := convertHeicToJpg(inputFileName, outputFileName)
+			// conversion_err := convertHeicToJpg(inputFileName, outputFileName)
 
-			if conversion_err != nil {
-				log.Fatal(conversion_err)
-			}
+			go convertHeicToJpg(inputFileName, outputFileName)
+
+			// if conversion_err != nil {
+			// 	log.Fatal(conversion_err)
+			// }
 		}
 
 		fmt.Println("--------------")
@@ -82,24 +84,24 @@ func main() {
 func convertHeicToJpg(input, output string) error {
 	fileInput, err := os.Open(input)
 	if err != nil {
-		return err
+		log.Println("os.Open() failed")
 	}
 	defer fileInput.Close()
 
 	// Extract exif to add back in after conversion
 	exif, err := goheif.ExtractExif(fileInput)
 	if err != nil {
-		return err
+		log.Println("goheif.ExtractExif() failed")
 	}
 
 	img, err := goheif.Decode(fileInput)
 	if err != nil {
-		return err
+		log.Println("goheif.Decode() failed")
 	}
 
 	fileOutput, err := os.OpenFile(output, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
-		return err
+		log.Println("os.OpenFile() failed")
 	}
 	defer fileOutput.Close()
 
@@ -107,7 +109,7 @@ func convertHeicToJpg(input, output string) error {
 	w, _ := newWriterExif(fileOutput, exif)
 	err = jpeg.Encode(w, img, nil)
 	if err != nil {
-		return err
+		log.Println("jpeg.Encode() failed")
 	}
 
 	return nil
@@ -133,10 +135,9 @@ func (w *writerSkipper) Write(data []byte) (int, error) {
 }
 
 func newWriterExif(w io.Writer, exif []byte) (io.Writer, error) {
-	defer timer("newWriterExif")()
-
 	writer := &writerSkipper{w, 2}
 	soi := []byte{0xff, 0xd8}
+
 	if _, err := w.Write(soi); err != nil {
 		return nil, err
 	}
