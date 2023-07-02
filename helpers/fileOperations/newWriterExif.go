@@ -29,7 +29,7 @@ func (w *writerSkipper) Write(data []byte) (int, error) {
 	}
 }
 
-func NewWriterExif(w io.Writer, exif []byte) (io.Writer, error) {
+func newWriterExif(w io.Writer, exif []byte) (io.Writer, error) {
 	writer := &writerSkipper{w, 2}
 	soi := []byte{0xff, 0xd8}
 

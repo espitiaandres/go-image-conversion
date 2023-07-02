@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"image/jpeg"
 	"log"
 	"os"
 	"strings"
@@ -10,8 +9,6 @@ import (
 	// "time"
 	"convert-heic/helpers/fileOperations"
 	"convert-heic/helpers/timer"
-
-	"github.com/adrium/goheif"
 )
 
 // CONSTANTS
@@ -50,7 +47,7 @@ func main() {
 			outputFileName = strings.ReplaceAll(inputFileName, ".HEIC", fmt.Sprintf(".%s", FILE_TYPE_OUTPUT))
 			// conversion_err := convertHeicToJpg(inputFileName, outputFileName)
 
-			go convertHeicToJpg(inputFileName, outputFileName)
+			go fileOperations.ConvertHeicToJpg(inputFileName, outputFileName)
 
 			// if conversion_err != nil {
 			// 	log.Fatal(conversion_err)
@@ -63,40 +60,4 @@ func main() {
 	}
 
 	log.Println("Conversion Passed")
-}
-
-// convertHeicToJpg takes in an input file (of heic format) and converts
-// it to a jpeg format, named as the output parameters.
-func convertHeicToJpg(input, output string) error {
-	fileInput, err := os.Open(input)
-	if err != nil {
-		log.Println("os.Open() failed")
-	}
-	defer fileInput.Close()
-
-	// Extract exif to add back in after conversion
-	exif, err := goheif.ExtractExif(fileInput)
-	if err != nil {
-		log.Println("goheif.ExtractExif() failed")
-	}
-
-	img, err := goheif.Decode(fileInput)
-	if err != nil {
-		log.Println("goheif.Decode() failed")
-	}
-
-	fileOutput, err := os.OpenFile(output, os.O_RDWR|os.O_CREATE, 0644)
-	if err != nil {
-		log.Println("os.OpenFile() failed")
-	}
-	defer fileOutput.Close()
-
-	// Write both convert file + exif data back
-	w, _ := fileOperations.NewWriterExif(fileOutput, exif)
-	err = jpeg.Encode(w, img, nil)
-	if err != nil {
-		log.Println("jpeg.Encode() failed")
-	}
-
-	return nil
 }
