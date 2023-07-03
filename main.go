@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 
@@ -11,6 +13,15 @@ import (
 	"convert-heic/helpers/fileOperations"
 	"convert-heic/helpers/timer"
 )
+
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
 
 func main() {
 	defer timer.FuncTimer("main")()
@@ -21,7 +32,23 @@ func main() {
 		}
 	}
 
-	entries, err := os.ReadDir(constants.INPUT_PATH)
+	allEntries, err := os.ReadDir(constants.INPUT_PATH)
+
+	var imageEntries []fs.DirEntry
+	validImageExtensions := []string{".jpg", ".png", ".heic", ".tif", ".eps"}
+
+	for _, e := range allEntries {
+		fileExtension := strings.ToLower(filepath.Ext(e.Name()))
+
+		if stringInSlice(fileExtension, validImageExtensions) {
+
+			fmt.Println("helppp")
+			fmt.Println(e.Name())
+			imageEntries = append(imageEntries, e)
+		}
+	}
+
+	// Filter out files that aren't images
 
 	if err != nil {
 		log.Fatal(err)
@@ -29,7 +56,7 @@ func main() {
 
 	var wg sync.WaitGroup
 
-	for _, e := range entries {
+	for _, e := range imageEntries {
 		inputFileName := fmt.Sprintf("%s/%s", constants.INPUT_PATH, e.Name())
 		outputFileName := fmt.Sprintf("%s/%s", constants.OUTPUT_PATH, e.Name())
 
@@ -61,5 +88,5 @@ func main() {
 
 	log.Println("Waiting for goroutines to complete...")
 	wg.Wait()
-	log.Printf("Completed image conversion for %v files", len(entries))
+	log.Printf("Completed image conversion for %v files", len(imageEntries))
 }
