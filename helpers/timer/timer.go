@@ -1,7 +1,7 @@
 package timer
 
 import (
-	"fmt"
+	"log"
 	"time"
 )
 
@@ -10,6 +10,6 @@ func FuncTimer(name string) func() {
 	start := time.Now()
 	return func() {
 		timeElapsed := time.Since(start)
-		fmt.Printf("%s took %v\n", name, timeElapsed)
+		log.Printf("%s took %v\n", name, timeElapsed)
 	}
 }

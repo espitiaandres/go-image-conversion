@@ -30,7 +30,6 @@ func main() {
 	var wg sync.WaitGroup
 
 	for _, e := range entries {
-
 		inputFileName := fmt.Sprintf("%s/%s", constants.INPUT_PATH, e.Name())
 		outputFileName := fmt.Sprintf("%s/%s", constants.OUTPUT_PATH, e.Name())
 
@@ -40,28 +39,27 @@ func main() {
 		)
 
 		if !heicFile {
-			// outputFileName = strings.ReplaceAll(inputFileName, constants.INPUT_PATH, constants.OUTPUT_PATH)
-			// go fileOperations.MoveFile(inputFileName, outputFileName)
-		} else {
-			outputFileName = strings.ReplaceAll(outputFileName, ".HEIC", fmt.Sprintf(".%s", constants.FILE_TYPE_OUTPUT))
-			// go fileOperations.ConvertHeicToJpg(wg, inputFileName, outputFileName)
+			outputFileName = strings.ReplaceAll(inputFileName, constants.INPUT_PATH, constants.OUTPUT_PATH)
 
 			wg.Add(1)
 
-			go func(input string, output string) {
+			go func() {
+				defer wg.Done()
+				fileOperations.MoveFile(inputFileName, outputFileName)
+			}()
+		} else {
+			outputFileName = strings.ReplaceAll(outputFileName, ".HEIC", fmt.Sprintf(".%s", constants.FILE_TYPE_OUTPUT))
+
+			wg.Add(1)
+
+			go func() {
 				defer wg.Done()
 				fileOperations.ConvertHeicToJpg(inputFileName, outputFileName)
-			}(inputFileName, outputFileName)
-
-			// time.Sleep(1 * time.Second)
+			}()
 		}
-
-		// log.Println("--------------")
-
-		// log.Println(inputFileName)
-		// log.Println(outputFileName)
 	}
 
-	log.Println("Conversion Passed")
+	log.Println("Waiting for goroutines to complete...")
 	wg.Wait()
+	log.Printf("Completed image conversion for %v files", len(entries))
 }
