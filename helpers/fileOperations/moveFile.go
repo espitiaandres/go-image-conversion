@@ -1,14 +1,16 @@
 package fileOperations
 
 import (
+	"convert-heic/helpers/timer"
 	"fmt"
 
-	"convert-heic/helpers/timer"
+	// "convert-heic/helpers/timer"
 	"io"
 	"os"
+	"sync"
 )
 
-func MoveFile(sourcePath, destPath string) error {
+func MoveFile(wg *sync.WaitGroup, sourcePath string, destPath string) error {
 	defer timer.FuncTimer("MoveFile")()
 
 	inputFile, err := os.Open(sourcePath)

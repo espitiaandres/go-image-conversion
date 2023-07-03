@@ -5,35 +5,34 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 
-	// "time"
+	"convert-heic/helpers/constants"
 	"convert-heic/helpers/fileOperations"
 	"convert-heic/helpers/timer"
 )
 
-// CONSTANTS
-const INPUT_PATH string = "./input"
-const OUTPUT_PATH string = "./output"
-const FILE_TYPE_OUTPUT string = "jpg"
-
 func main() {
 	defer timer.FuncTimer("main")()
 
-	if _, existErr := os.Stat(OUTPUT_PATH); os.IsNotExist(existErr) {
-		if mkdirErr := os.Mkdir(OUTPUT_PATH, os.ModePerm); mkdirErr != nil {
+	if _, existErr := os.Stat(constants.OUTPUT_PATH); os.IsNotExist(existErr) {
+		if mkdirErr := os.Mkdir(constants.OUTPUT_PATH, os.ModePerm); mkdirErr != nil {
 			log.Fatal(mkdirErr)
 		}
 	}
 
-	entries, err := os.ReadDir(INPUT_PATH)
+	entries, err := os.ReadDir(constants.INPUT_PATH)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	var wg sync.WaitGroup
+
 	for _, e := range entries {
-		inputFileName := fmt.Sprintf("%s/%s", INPUT_PATH, e.Name())
-		outputFileName := ""
+
+		inputFileName := fmt.Sprintf("%s/%s", constants.INPUT_PATH, e.Name())
+		outputFileName := fmt.Sprintf("%s/%s", constants.OUTPUT_PATH, e.Name())
 
 		heicFile := strings.Contains(
 			strings.ToLower(inputFileName),
@@ -41,23 +40,28 @@ func main() {
 		)
 
 		if !heicFile {
-			outputFileName = strings.ReplaceAll(inputFileName, INPUT_PATH, OUTPUT_PATH)
-			go fileOperations.MoveFile(inputFileName, outputFileName)
+			// outputFileName = strings.ReplaceAll(inputFileName, constants.INPUT_PATH, constants.OUTPUT_PATH)
+			// go fileOperations.MoveFile(inputFileName, outputFileName)
 		} else {
-			outputFileName = strings.ReplaceAll(inputFileName, ".HEIC", fmt.Sprintf(".%s", FILE_TYPE_OUTPUT))
-			// conversion_err := convertHeicToJpg(inputFileName, outputFileName)
+			outputFileName = strings.ReplaceAll(outputFileName, ".HEIC", fmt.Sprintf(".%s", constants.FILE_TYPE_OUTPUT))
+			// go fileOperations.ConvertHeicToJpg(wg, inputFileName, outputFileName)
 
-			go fileOperations.ConvertHeicToJpg(inputFileName, outputFileName)
+			wg.Add(1)
 
-			// if conversion_err != nil {
-			// 	log.Fatal(conversion_err)
-			// }
+			go func(input string, output string) {
+				defer wg.Done()
+				fileOperations.ConvertHeicToJpg(inputFileName, outputFileName)
+			}(inputFileName, outputFileName)
+
+			// time.Sleep(1 * time.Second)
 		}
 
-		fmt.Println("--------------")
-		fmt.Println(inputFileName)
-		fmt.Println(outputFileName)
+		// log.Println("--------------")
+
+		// log.Println(inputFileName)
+		// log.Println(outputFileName)
 	}
 
 	log.Println("Conversion Passed")
+	wg.Wait()
 }
