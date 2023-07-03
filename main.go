@@ -11,17 +11,9 @@ import (
 
 	"convert-heic/helpers/constants"
 	"convert-heic/helpers/fileOperations"
+	"convert-heic/helpers/helpers"
 	"convert-heic/helpers/timer"
 )
-
-func stringInSlice(a string, list []string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
-}
 
 func main() {
 	defer timer.FuncTimer("main")()
@@ -40,15 +32,11 @@ func main() {
 	for _, e := range allEntries {
 		fileExtension := strings.ToLower(filepath.Ext(e.Name()))
 
-		if stringInSlice(fileExtension, validImageExtensions) {
-
-			fmt.Println("helppp")
-			fmt.Println(e.Name())
+		// Filter out files that aren't images
+		if helpers.StringInSlice(fileExtension, validImageExtensions) {
 			imageEntries = append(imageEntries, e)
 		}
 	}
-
-	// Filter out files that aren't images
 
 	if err != nil {
 		log.Fatal(err)
