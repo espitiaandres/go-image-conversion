@@ -63,7 +63,7 @@ func main() {
 				fileOperations.MoveFile(inputFileName, outputFileName)
 			}()
 		} else {
-			outputFileName = strings.ReplaceAll(outputFileName, ".HEIC", fmt.Sprintf(".%s", constants.FILE_TYPE_OUTPUT))
+			outputFileName = strings.ReplaceAll(outputFileName, ".HEIC", fmt.Sprintf(".%s", constants.OUTPUT_FILE_TYPE))
 
 			wg.Add(1)
 
