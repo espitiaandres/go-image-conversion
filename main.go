@@ -69,7 +69,7 @@ func main() {
 
 			go func() {
 				defer wg.Done()
-				fileOperations.ConvertHeicToJpg(inputFileName, outputFileName)
+				fileOperations.ImageConvertToTarget(inputFileName, outputFileName)
 			}()
 		}
 	}

@@ -32,4 +32,6 @@ func MoveFile(sourcePath string, destPath string) {
 	if err != nil {
 		log.Printf("os.Open() failed: %s", err)
 	}
+
+	log.Printf("Completed moving the file for %s", sourcePath)
 }

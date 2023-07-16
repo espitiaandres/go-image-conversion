@@ -8,9 +8,9 @@ import (
 	"github.com/adrium/goheif"
 )
 
-// convertHeicToJpg takes in an input file (of heic format) and converts
+// ImageConvertToTarget takes in an input file and converts
 // it to a jpeg format, named as the output parameters.
-func ConvertHeicToJpg(input string, output string) {
+func ImageConvertToTarget(input string, output string) {
 
 	fileInput, err := os.Open(input)
 	if err != nil {
@@ -26,6 +26,7 @@ func ConvertHeicToJpg(input string, output string) {
 		log.Println("goheif.ExtractExif() failed")
 	}
 
+	// Decode the image frjom the file path into an image.Image type
 	img, err := goheif.Decode(fileInput)
 	if err != nil {
 		log.Println("goheif.Decode() failed")
