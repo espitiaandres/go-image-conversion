@@ -27,7 +27,7 @@ func main() {
 	allEntries, err := os.ReadDir(constants.INPUT_PATH)
 
 	var imageEntries []fs.DirEntry
-	validImageExtensions := []string{".jpg", ".png", ".heic", ".tif", ".eps"}
+	validImageExtensions := []string{".jpg", ".jpeg", ".png", ".heic", ".tiff", ".eps", ".bmp"}
 
 	for _, e := range allEntries {
 		fileExtension := strings.ToLower(filepath.Ext(e.Name()))
@@ -48,17 +48,10 @@ func main() {
 		inputFileName := fmt.Sprintf("%s/%s", constants.INPUT_PATH, e.Name())
 		outputFileName := fmt.Sprintf("%s/%s", constants.OUTPUT_PATH, e.Name())
 
-		// fileWithDesiredOutputType := strings.Contains(
-		// 	strings.ToLower(inputFileName),
-		// 	strings.ToLower(".heic"),
-		// )
 		fileWithDesiredOutputType := strings.Contains(
 			strings.ToLower(inputFileName),
 			strings.ToLower(fmt.Sprintf(".%s", constants.OUTPUT_FILE_TYPE)),
 		)
-
-		// fmt.Printf(outputFileName)
-		// fmt.Printf("%t", fileWithDesiredOutputType)
 
 		if fileWithDesiredOutputType {
 			outputFileName = strings.ReplaceAll(inputFileName, constants.INPUT_PATH, constants.OUTPUT_PATH)
