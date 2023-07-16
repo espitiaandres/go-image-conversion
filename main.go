@@ -9,10 +9,10 @@ import (
 	"strings"
 	"sync"
 
-	"convert-heic/helpers/constants"
-	"convert-heic/helpers/fileOperations"
-	"convert-heic/helpers/helpers"
-	"convert-heic/helpers/timer"
+	"image-conversion/helpers/constants"
+	"image-conversion/helpers/fileOperations"
+	"image-conversion/helpers/helpers"
+	"image-conversion/helpers/timer"
 )
 
 func main() {
@@ -48,12 +48,19 @@ func main() {
 		inputFileName := fmt.Sprintf("%s/%s", constants.INPUT_PATH, e.Name())
 		outputFileName := fmt.Sprintf("%s/%s", constants.OUTPUT_PATH, e.Name())
 
-		heicFile := strings.Contains(
+		// fileWithDesiredOutputType := strings.Contains(
+		// 	strings.ToLower(inputFileName),
+		// 	strings.ToLower(".heic"),
+		// )
+		fileWithDesiredOutputType := strings.Contains(
 			strings.ToLower(inputFileName),
-			strings.ToLower(".heic"),
+			strings.ToLower(fmt.Sprintf(".%s", constants.OUTPUT_FILE_TYPE)),
 		)
 
-		if !heicFile {
+		// fmt.Printf(outputFileName)
+		// fmt.Printf("%t", fileWithDesiredOutputType)
+
+		if fileWithDesiredOutputType {
 			outputFileName = strings.ReplaceAll(inputFileName, constants.INPUT_PATH, constants.OUTPUT_PATH)
 
 			wg.Add(1)

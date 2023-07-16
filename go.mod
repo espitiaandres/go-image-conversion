@@ -1,4 +1,4 @@
-module convert-heic
+module image-conversion
 
 go 1.20
 

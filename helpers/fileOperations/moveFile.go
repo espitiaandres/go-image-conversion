@@ -1,7 +1,7 @@
 package fileOperations
 
 import (
-	"convert-heic/helpers/timer"
+	"image-conversion/helpers/timer"
 	"io"
 	"log"
 	"os"
