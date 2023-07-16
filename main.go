@@ -15,6 +15,8 @@ import (
 	"image-conversion/helpers/timer"
 )
 
+// Only for converting .heic files into .jpg
+
 func main() {
 	defer timer.FuncTimer("main")()
 
