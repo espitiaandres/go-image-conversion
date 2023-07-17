@@ -4,7 +4,7 @@ Convert all images in a specified directory to a specified file type.
 
 - To specify the directory that has all the images you want to convert, change the `INPUT_PATH` variable in `./helpers/constants/constants.go`. This can be anything, as long as it is a valid path 😄.
 - To specify the directory that will contain all the **converted** images, change the `OUTPUT_PATH` variables in `./helpers/constants/constants.go`. Again this can be anything, as long as it is a valid path 😄.
-- To specify the output type of all the **converted** images, change the `OUTPUT_FILE_TYPE` variable in `./helpers/constants/constants.go`.
+- Currently, only `.jpg` images are the only file type that is supported for the **converted** images.
 
 ## Installation
 
