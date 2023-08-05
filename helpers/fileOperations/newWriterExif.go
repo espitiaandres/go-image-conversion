@@ -5,6 +5,7 @@ import (
 )
 
 // Skip Writer for exif writing
+// Exif wrtiing = Exchangeable Image Writing Format
 type writerSkipper struct {
 	w           io.Writer
 	bytesToSkip int
@@ -41,6 +42,7 @@ func NewWriterExif(w io.Writer, exif []byte) (io.Writer, error) {
 		app1Marker := 0xe1
 		markerlen := 2 + len(exif)
 		marker := []byte{0xff, uint8(app1Marker), uint8(markerlen >> 8), uint8(markerlen & 0xff)}
+
 		if _, err := w.Write(marker); err != nil {
 			return nil, err
 		}
@@ -65,6 +67,7 @@ func newWriterExif(w io.Writer, exif []byte) (io.Writer, error) {
 		app1Marker := 0xe1
 		markerlen := 2 + len(exif)
 		marker := []byte{0xff, uint8(app1Marker), uint8(markerlen >> 8), uint8(markerlen & 0xff)}
+
 		if _, err := w.Write(marker); err != nil {
 			return nil, err
 		}
