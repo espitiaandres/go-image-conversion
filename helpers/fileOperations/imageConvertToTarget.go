@@ -42,7 +42,7 @@ func ImageConvertToTarget(input string, output string) {
 	// Write both convert file + exif data back
 	w, _ := newWriterExif(fileOutput, exif)
 
-	// TODO: have encoders for all file types
+	// TODO: have encoders for all file types - need to research this
 	// TODO: imports, write switch/case statement for all different file types
 	// https://github.com/dawnlabs/photosorcery/blob/master/convert.go
 
