@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"regexp"
 
 	"image-conversion/helpers/constants"
 	"image-conversion/helpers/fileOperations"
@@ -65,8 +66,9 @@ func main() {
 				fileOperations.MoveFile(inputFileName, outputFileName)
 			}()
 		} else {
-			outputFileName = strings.ReplaceAll(outputFileName, ".HEIC", fmt.Sprintf(".%s", constants.OUTPUT_FILE_TYPE))
-
+			re := regexp.MustCompile(`(?i)heic`)
+			outputFileName = re.ReplaceAllString(outputFileName, constants.OUTPUT_FILE_TYPE)
+			
 			wg.Add(1)
 
 			go func() {
