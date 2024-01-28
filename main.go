@@ -79,6 +79,8 @@ func main() {
 	}
 
 	log.Println("Waiting for goroutines to complete...")
+
 	wg.Wait()
+	
 	log.Printf("Completed image conversion for %v files", len(imageEntries))
 }
